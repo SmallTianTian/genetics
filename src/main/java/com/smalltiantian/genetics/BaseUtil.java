@@ -60,10 +60,12 @@ public class BaseUtil {
 			for (int j = 0; j < BaseData.getInstance().originalImageHeight; j++)
 				diff += compareRGB(BaseData.getInstance().originalImageRGB[i][j], newPic[i][j]);
 		}
-        double similarity = (BaseData.getInstance().originalImageRGBSun - diff) / BaseData.getInstance().originalImageRGBSun;
-        while ((similarity *= 10) > 1) {}
+        double similarity = (double)(BaseData.getInstance().originalImageRGBSun - diff) / BaseData.getInstance().originalImageRGBSun;
+        while ((similarity *= 10) < 1) {}
 
         pic.similarity = (int)(similarity * 10000000);
+
+        BaseData.getInstance().fathers.add(pic);
         return pic.similarity;
     }
 

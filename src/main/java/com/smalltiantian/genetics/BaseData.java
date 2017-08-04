@@ -35,7 +35,6 @@ class BaseData {
             throw new IllegalStateException("Error : You couldn't init this(`BaseData`) again.");
         
         baseData = new BaseData(0, imagePath);
-
         return baseData;
     }
 
@@ -58,7 +57,13 @@ class BaseData {
 		this.originalImageWidth  = image.getHeight();
 		this.originalImageHeight = image.getWidth();
         this.originalImageRGBSun = this.originalImageWidth * this.originalImageHeight * 255 * 3L;
-        this.originalImageRGB  = BaseUtil.getRGB(image);
+
+        this.originalImageRGB  = new int[this.originalImageWidth][this.originalImageHeight];
+        for (int i = 0; i < this.originalImageWidth; i++) {
+            for (int j = 0; j < this.originalImageHeight; j++)
+                this.originalImageRGB[i][j] = image.getRGB(i, j);
+        }
+
         this.index = index;
         this.originalImagePath = imagePath;
     }
