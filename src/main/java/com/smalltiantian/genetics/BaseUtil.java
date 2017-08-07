@@ -4,9 +4,11 @@ import java.util.Random;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.ArrayList;
+import com.google.gson.Gson;
 
 public class BaseUtil {
     private static Random random = new Random();
+    private static Gson gson     = new Gson();
 
     /**
      * 获得 int 类型的随机数
@@ -17,6 +19,15 @@ public class BaseUtil {
     public static int getRandomInt(int max) {
 		return random.nextInt(max);
 	}
+
+    /**
+     * 单例获取 Gson
+     *
+     * @return Gson
+     */
+    public static Gson gson() {
+        return gson;
+    }
 
     /**
      * 获得缓冲图片的每个点的 RGB 值
