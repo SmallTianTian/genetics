@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 
 public class BaseUtil {
-    private static Random random = new Random();
+    static Random random = new Random();
     private static Gson gson     = new Gson();
 
     /**
@@ -18,7 +18,7 @@ public class BaseUtil {
      */
     public static int getRandomInt(int max) {
 		return random.nextInt(max);
-	}
+    }
 
     /**
      * 单例获取 Gson
@@ -35,14 +35,14 @@ public class BaseUtil {
      * @param  image 缓冲图片
      * @return 包含每个点 RGB 值的二维数组
      */
-	static int[][] getRGB(BufferedImage image) {
-		int[][] rgb = new int[BaseData.getInstance().originalImageWidth][BaseData.getInstance().originalImageHeight];
-		for (int i = 0; i < BaseData.getInstance().originalImageWidth; i++) {
-			for (int j = 0; j < BaseData.getInstance().originalImageHeight; j++)
-				rgb[i][j] = image.getRGB(i, j);
-		}
-		return rgb;
-	}
+    static int[][] getRGB(BufferedImage image) {
+        int[][] rgb = new int[BaseData.getInstance().originalImageWidth][BaseData.getInstance().originalImageHeight];
+        for (int i = 0; i < BaseData.getInstance().originalImageWidth; i++) {
+            for (int j = 0; j < BaseData.getInstance().originalImageHeight; j++)
+                rgb[i][j] = image.getRGB(i, j);
+        }
+        return rgb;
+    }
 
     /**
      * 比较两个点 RGB 值的差异
@@ -67,7 +67,8 @@ public class BaseUtil {
     public static int checkSimilarity(Picture pic) {
         int[][] newPic = getRGB(pic.drawImge());
         long diff = 0;
-		for (int i = 0; i < BaseData.getInstance().originalImageWidth; i++) {
+
+        for (int i = 0; i < BaseData.getInstance().originalImageWidth; i++) {
 			for (int j = 0; j < BaseData.getInstance().originalImageHeight; j++)
 				diff += compareRGB(BaseData.getInstance().originalImageRGB[i][j], newPic[i][j]);
 		}
@@ -90,14 +91,18 @@ public class BaseUtil {
      * @param  varianceRatio 变异的概率
      */
     public static void newborn(int populationNum, int varianceRatio) {
+        List<Picture> willAdd = new ArrayList<>();
+
         int stronger = whoIsStronger();
-        // TODO 根据实际使用的类选择
-        BaseData.getInstance().sons.add(BaseData.getInstance().fathers.get(stronger));
+        willAdd.add(BaseData.getInstance().fathers.get(stronger));
+
         for (int i = 1; i < populationNum; i++) {
             long random1 = (long)(random.nextDouble() * BaseData.getInstance().similarityWithAllPic);
 			long random2 = (long)(random.nextDouble() * BaseData.getInstance().similarityWithAllPic);
-			List<Triangle> newPic = new ArrayList<>();
-			for (Picture pic : BaseData.getInstance().fathers) {
+
+            List<Triangle> newPic = new ArrayList<>();
+
+            for (Picture pic : BaseData.getInstance().fathers) {
 				if ((random1 -= pic.similarity) < 0) {
 					newPic.addAll(pic.getHeadTriangle());
 					break;
@@ -109,9 +114,20 @@ public class BaseUtil {
 					break;
 				}
 			}
-            BaseData.getInstance().sons.add(new Picture(newPic, getRandomInt(100) < varianceRatio));
+
+            willAdd.add(new Picture(newPic, getRandomInt(100) < varianceRatio));
         }
+
         BaseData.getInstance().fathers.clear();
+
+        for (Picture pic : willAdd) {
+            try {
+                BaseData.getInstance().sons.put(pic);
+            } catch (Exception e) {
+                // 简单粗暴，不推荐
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -125,7 +141,8 @@ public class BaseUtil {
 		long all  = 0;
 		int max   = 0;
 		int index = 0;
-		for (int i = 0; i < BaseData.getInstance().fathers.size(); i++) {
+
+        for (int i = 0; i < BaseData.getInstance().fathers.size(); i++) {
 			int similarity = BaseData.getInstance().fathers.get(i).similarity;
 			all += similarity;
 			if (similarity > max) {
@@ -133,7 +150,8 @@ public class BaseUtil {
 				max = similarity;
 			}
 		}
-		BaseData.getInstance().similarityWithAllPic = all;
+
+        BaseData.getInstance().similarityWithAllPic = all;
 		return index;
 	}
 
