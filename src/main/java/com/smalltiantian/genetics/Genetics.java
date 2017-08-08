@@ -124,7 +124,6 @@ public class Genetics {
 
         for (Thread thread : list)
             new Thread(thread).start();
-
     }
 
     private int beginData() {

@@ -91,11 +91,9 @@ public class Picture {
     /**
      * 根据已有的三角形集合画图并存储在本地磁盘上
      *
-     * @param  now 目前是多少代，方便图像命名区分
      */
-    public void writeToLocal(int now) throws IOException {
-        // 用户设置
-		String name = String.format("%d-%d.jpg", now, similarity);
+    public void writeToLocal() throws IOException {
+		String name = String.format(Config.getInstance().saveAddress() + "/%d-%d.jpg", BaseData.getInstance().index, similarity);
 		ImageIO.write(drawImge(), "jpg", new File(name));
 	}
 }
