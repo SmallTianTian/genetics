@@ -22,7 +22,7 @@ public class BaseFeature extends BaseTest {
         }
 
         while (BaseDataHelper.sons().size() > 0)
-            BaseUtil.checkSimilarity(BaseDataHelper.sons().remove());
+            BaseUtil.checkSimilarity(BaseDataHelper.sons().take());
         Assert.assertEquals(BaseDataHelper.fathers().size(), populationNum);
 
         BaseUtil.newborn(populationNum, varianceRatio);
@@ -39,12 +39,12 @@ public class BaseFeature extends BaseTest {
         }
 
         while (BaseDataHelper.sons().size() > 0)
-            BaseUtil.checkSimilarity(BaseDataHelper.sons().remove());
+            BaseUtil.checkSimilarity(BaseDataHelper.sons().take());
         int fatherStronger = BaseDataHelper.fathersSimilarity(BaseUtil.whoIsStronger());
 
         BaseUtil.newborn(populationNum, varianceRatio);
         while (BaseDataHelper.sons().size() > 0)
-            BaseUtil.checkSimilarity(BaseDataHelper.sons().remove());
+            BaseUtil.checkSimilarity(BaseDataHelper.sons().take());
         int sonStronger    = BaseDataHelper.fathersSimilarity(BaseUtil.whoIsStronger());
         
         Assert.assertTrue(fatherStronger <= sonStronger);

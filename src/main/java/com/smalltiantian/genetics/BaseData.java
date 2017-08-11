@@ -5,14 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
 
 class BaseData {
     private static BaseData baseData = null;
 
     List<Picture> fathers    = new ArrayList<Picture>();
-    LinkedList<Picture> sons = new LinkedList<Picture>();
+    LinkedBlockingQueue<Picture> sons = new LinkedBlockingQueue<Picture>();
 
     // 目前经过了多少代的繁育
     int index;
@@ -48,8 +48,17 @@ class BaseData {
         return baseData;
     }
 
+    public synchronized void addFathers(Picture pic) {
+        this.fathers.add(pic);
+    }
+
     public void addANewSon(Picture pic) {
-        this.sons.add(pic);
+        try {
+            this.sons.put(pic);
+        } catch (Exception e) {
+            // 简单粗暴的，不推荐
+            e.printStackTrace();
+        }
     }
 
    private BaseData(int index, String imagePath) throws IOException {

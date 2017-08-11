@@ -3,6 +3,7 @@ package com.smalltiantian.genetics;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.io.IOException;
 
 public class BaseDataHelper {
@@ -19,7 +20,7 @@ public class BaseDataHelper {
         return BaseData.getInstance().fathers;
     }
 
-    public static LinkedList<Picture> sons() {
+    public static LinkedBlockingQueue<Picture> sons() {
         return BaseData.getInstance().sons;
     }
 

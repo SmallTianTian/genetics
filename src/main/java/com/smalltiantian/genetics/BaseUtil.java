@@ -100,7 +100,7 @@ public class BaseUtil {
 
         pic.similarity = (int)(similarity * 10000000);
 
-        BaseData.getInstance().fathers.add(pic);
+        BaseData.getInstance().addFathers(pic);
         return pic.similarity;
     }
 
@@ -142,7 +142,7 @@ public class BaseUtil {
         }
 
         BaseData.getInstance().fathers.clear();
-
+        
         for (Picture pic : willAdd) {
             try {
                 BaseData.getInstance().sons.put(pic);
