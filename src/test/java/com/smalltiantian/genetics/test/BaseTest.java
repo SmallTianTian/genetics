@@ -10,8 +10,8 @@ public class BaseTest {
     public void initConfigs() throws Exception {
         BaseDataHelper.init();
 
-        Assert.assertEquals(BaseDataHelper.fathers().size(), 0);
-        Assert.assertNotNull(BaseDataHelper.sons());
+        Assert.assertTrue(BaseDataHelper.fathers().size() > 0);
+        Assert.assertEquals(BaseDataHelper.sons().size(), 0);
         Assert.assertEquals(BaseDataHelper.index(), 0);
         Assert.assertNotNull(BaseDataHelper.originalImagePath());
     }

@@ -1,5 +1,9 @@
 package com.smalltiantian.genetics;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+
 class Triangle {
     int[] xPoint = new int[3];
 	int[] yPoint = new int[3];
@@ -19,6 +23,17 @@ class Triangle {
 		this.yPoint = yPoint;
 		this.rgb    = rgb;
 	}
+
+    public Triangle(JsonObject element) {
+        JsonArray xPoint = element.getAsJsonArray("x");
+        JsonArray yPoint = element.getAsJsonArray("y");
+        JsonArray rgb    = element.getAsJsonArray("r");
+        for (int i = 0; i < 3; i++) {
+            this.xPoint[i] = xPoint.get(i).getAsInt();
+            this.yPoint[i] = yPoint.get(i).getAsInt();
+            this.rgb[i]    = rgb.get(i).getAsInt();
+        }
+    }
 
     /**
      * 进行变异
@@ -46,4 +61,28 @@ class Triangle {
 			return new Triangle(xPoint, yPoint, newRgb);
 		}
 	}
+
+    /**
+     * 将数据转换为 Json 格式输出。
+     *
+     * 示例：
+     * {'x':[1,2,3], 'y':[4,5,6], 'r':[100,254,31]}
+     *
+     * @return JsonElement
+     */
+    public JsonElement toJson() {
+        JsonObject object = new JsonObject();
+        JsonArray xPoint = new JsonArray();
+        JsonArray yPoint = new JsonArray();
+        JsonArray rgb    = new JsonArray();
+        for (int i = 0; i < 3; i++) {
+            xPoint.add(this.xPoint[i]);
+            yPoint.add(this.yPoint[i]);
+            rgb.add(this.rgb[i]);
+        }
+        object.add("x", xPoint);
+        object.add("y", yPoint);
+        object.add("r", rgb);
+        return object;
+    }
 }

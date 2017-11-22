@@ -10,8 +10,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
-public class Picture {
+class Picture {
     private List<Triangle> triangle = new ArrayList<>();
     int similarity;
 
@@ -23,11 +26,22 @@ public class Picture {
             this.triangle.add(new Triangle());
     }
 
+    public Picture(JsonObject picStr) {
+        JsonArray pic = picStr.getAsJsonArray("pic");
+
+        List<Triangle> triangles = new ArrayList<>(pic.size());
+        for(JsonElement element : pic) {
+            triangles.add(new Triangle(element.getAsJsonObject()));
+        }
+        this.triangle = triangles;
+        this.similarity = picStr.get("similarity").getAsInt();
+    }
+
     public Picture(List<Triangle> triangles, boolean isVariation) {
+        this.triangle = triangles;
+        Collections.shuffle(this.triangle);
 		if (triangles.size() == 0)
 			throw new IllegalStateException("Error : You must hava one Triangle in this Picture.");
-		this.triangle = triangles;
-        Collections.shuffle(this.triangle);
 
 		if (isVariation)
 			variation();
@@ -50,7 +64,7 @@ public class Picture {
      *
      * @return 前一半的三角形 {@code List} 集合
      */
-    public List<Triangle> getHeadTriangle() {
+    List<Triangle> getHeadTriangle() {
 		return new ArrayList<>(triangle.subList(0, this.triangle.size() / 2));
 	}
 
@@ -62,7 +76,7 @@ public class Picture {
      *
      * @return 后一半的三角形 {@code List} 集合
      */
-    public List<Triangle> getBottonTriangle() {
+    List<Triangle> getBottonTriangle() {
 		return new ArrayList<>(triangle.subList(this.triangle.size() / 2, this.triangle.size()));
 	}
 
@@ -71,7 +85,7 @@ public class Picture {
      *
      * @return 缓存的图像
      */
-    public BufferedImage drawImge() {
+    BufferedImage drawImge() {
 		BufferedImage image = new BufferedImage(BaseData.getInstance().originalImageWidth, BaseData.getInstance().originalImageHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics graphics   = image.getGraphics();
 
@@ -92,8 +106,28 @@ public class Picture {
      * 根据已有的三角形集合画图并存储在本地磁盘上
      *
      */
-    public void writeToLocal() throws IOException {
+    void writeToLocal() throws IOException {
 		String name = String.format(Config.getInstance().saveAddress() + "/%d-%d.jpg", BaseData.getInstance().index, similarity);
 		ImageIO.write(drawImge(), "jpg", new File(name));
 	}
+
+    /**
+     * 将数据转换为 Json 格式输出。
+     *
+     * 示例：
+     * {"pic":[{'x':[1,2,3], 'y':[4,5,6], 'r':[100,254,31]}, {'x':[1,2,3], 'y':[4,5,6], 'r':[100,254,31]}], "similarity":100000}
+     * @return JsonElement
+     */
+    public JsonElement toJson() {
+        JsonObject object = new JsonObject();
+
+        JsonArray array = new JsonArray();
+        for (Triangle t : this.triangle) {
+            array.add(t.toJson());
+        }
+
+        object.add("pic", array);
+        object.addProperty("similarity", this.similarity);
+        return object;
+    }
 }

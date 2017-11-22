@@ -5,15 +5,32 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.io.IOException;
+import java.io.File;
 
 public class BaseDataHelper {
     public static void init() throws IOException {
         String imagePath = System.getProperty("user.dir") + "/src/test/resource/" + "firefox.jpg";
-        BaseData.init(imagePath);
+        Genetics.init(new File(imagePath));
     }
 
-    public static void addANewSon(Picture pic) {
-        BaseData.getInstance().addANewSon(pic);
+    public static Picture newPicture(int triangleNum) {
+        return new Picture(triangleNum);
+    }
+
+    public static Picture takeFromSons() throws Exception {
+        return sons().take();
+    }
+
+    public static int checkSimilarityByBaseUtil(Picture pic) {
+        return BaseUtil.checkSimilarity(pic);
+    }
+
+    public static void bornByBaseUtil(int populationNum, int varianceRatio) {
+        BaseUtil.newborn(populationNum, varianceRatio);
+    }
+
+    public static int whoIsStrongerByBaseUtil() {
+        return BaseUtil.whoIsStronger();
     }
 
     public static List<Picture> fathers() {
@@ -29,7 +46,7 @@ public class BaseDataHelper {
     }
 
     public static String originalImagePath() {
-        return BaseData.getInstance().originalImagePath;
+        return Config.getInstance().image();
     }
 
     public static int fathersSimilarity(int index) {

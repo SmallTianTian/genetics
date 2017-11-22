@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-public class BaseUtil {
+class BaseUtil {
     static Random random = new Random();
     private static Gson gson     = new Gson();
 
@@ -24,18 +26,30 @@ public class BaseUtil {
     }
 
     /**
+     * 判断是否是图片。
+     *
+     * @param  file 文件的路径
+     * @return 此路径是否是图片
+     */
+    public static boolean isImage(String file) throws Exception {
+        return ImageIO.read(new File(file)) == null ? false : true;
+    }
+
+    /**
      * 将目前所有状态保存到本地磁盘上
      */
     public static void storedToDisk() {
         int stronger = whoIsStronger();
 
-        String baseData = gson.toJson(BaseData.getInstance());
+        JsonObject object = new JsonObject();
+        object.add("config", Config.getInstance().toJson());
+        object.add("data", BaseData.getInstance().toJson());
 
         FileOutputStream os = null;
         try {
             BaseData.getInstance().fathers.get(stronger).writeToLocal();
-            os = new FileOutputStream(new File(Config.getInstance().saveAddress() + "/base_data.json"));
-            IOUtils.write(baseData, os, "utf-8");
+            os = new FileOutputStream(new File(Config.getInstance().saveAddress(), "genetics.json"));
+            IOUtils.write(object.toString(), os, "utf-8");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -142,10 +156,10 @@ public class BaseUtil {
         }
 
         BaseData.getInstance().fathers.clear();
-        
+
         for (Picture pic : willAdd) {
             try {
-                BaseData.getInstance().sons.put(pic);
+                BaseData.getInstance().addANewSon(pic);
             } catch (Exception e) {
                 // 简单粗暴，不推荐
                 e.printStackTrace();
@@ -177,6 +191,19 @@ public class BaseUtil {
         BaseData.getInstance().similarityWithAllPic = all;
 		return index;
 	}
+
+    /**
+     * 确保参数不为 {@code null}
+     *
+     * @param  var 被检查的参数值
+     * @param  paramName 被检查的参数名称
+     * @return 被检查的参数值
+     */
+    public static <T> T ensureVarIsNotNull(T var, String paramName) {
+        if (var == null)
+            throw new NullPointerException(String.format("Error : Your param `%s` is `null`.", paramName));
+        return var;
+    }
 
     private BaseUtil(){}
 }
