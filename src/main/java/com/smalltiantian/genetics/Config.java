@@ -12,17 +12,19 @@ class Config {
     private final int initialNum;       // 初代种数量
     private final double growthRate;    // 增长率（-1 为自动选择）
     private final int DNANum;           // 每一个个体有多少个 DNA
+    private int reproductiveOutput;     // 繁殖多少代后停止（-1 为无休止）
 
     public static Config initByDefault() {
-        String path = System.getProperty("user.dir");
+        String path = System.getProperty("user.dir") + "/image";
         int countThreadNum = Runtime.getRuntime().availableProcessors();
-        return init(path, -1, 20, countThreadNum, 100, -1, 100);
+        return init(path, -1, 20, countThreadNum, 100, -1, 100, -1);
     }
 
-    public static Config init(String saveAddress, int varianceRatio, int saveTimer, int countThreadNum, int initialNum, double growthRate, int DNANum) {
+    public static Config init(String saveAddress, int varianceRatio, int saveTimer, int countThreadNum, int initialNum, double growthRate, int DNANum, int reproductiveOutput) {
         if (config != null)
             throw new IllegalArgumentException("Error : You couldn't init this(`Config`) again.");
-        config = new Config(saveAddress, varianceRatio, saveTimer, countThreadNum, initialNum, growthRate, DNANum);
+        new File(saveAddress).mkdirs();
+        config = new Config(saveAddress, varianceRatio, saveTimer, countThreadNum, initialNum, growthRate, DNANum, reproductiveOutput);
         return config;
     }
 
@@ -32,7 +34,7 @@ class Config {
         return config;
     }
 
-    Config(String saveAddress, int varianceRatio, int saveTimer, int countThreadNum, int initialNum, double growthRate, int DNANum) {
+    Config(String saveAddress, int varianceRatio, int saveTimer, int countThreadNum, int initialNum, double growthRate, int DNANum, int reproductiveOutput) {
         File file = new File(saveAddress);
         if (!file.canWrite())
             throw new IllegalArgumentException("Error : Your `saveAddress` couldn't write.Please check it in you config.");
@@ -48,6 +50,8 @@ class Config {
             throw new IllegalArgumentException("Error : You mast let `growthRate` which in your config < 1 or >-1.");
         if (DNANum < 50)
             throw new IllegalArgumentException("Error : You mast let `DNANum` which in your config >= 50");
+        if (reproductiveOutput < -1)
+            throw new IllegalArgumentException("Error : You mast let `reproductiveOutput` which in your config > -1");
 
         this.growthRate     = growthRate;
         this.initialNum     = initialNum;
@@ -55,6 +59,7 @@ class Config {
         this.saveAddress    = saveAddress;
         this.varianceRatio  = varianceRatio;
         this.DNANum         = DNANum;
+        this.reproductiveOutput = reproductiveOutput;
         switch (countThreadNum) {
             case 0:
                this.countThreadNum =  Runtime.getRuntime().availableProcessors();
@@ -70,6 +75,10 @@ class Config {
 
     int DNANum() {
         return this.DNANum;
+    }
+
+    boolean canBreed() {
+        return this.reproductiveOutput-- != 0;
     }
 
     int varianceRatio() {
