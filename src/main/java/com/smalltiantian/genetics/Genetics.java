@@ -40,7 +40,7 @@ public class Genetics {
         g.begin();
     }
 
-    public static Genetics init() {
+    public static Genetics init(File imagePath) {
         if (genetics != null)
             throw new IllegalStateException("Error : You already init this(`Genetics`).");
         Config config = Config.initByDefault();

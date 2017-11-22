@@ -30,7 +30,7 @@ class BaseData {
         return baseData;
     }
 
-    static BaseData init(String imagePath) throws IOException {
+    static BaseData init(File imagePath) throws IOException {
         if (baseData != null)
             throw new IllegalStateException("Error : You couldn't init this(`BaseData`) again.");
         
@@ -38,7 +38,7 @@ class BaseData {
         return baseData;
     }
 
-    static BaseData init(List<Picture> fathers, int index, String imagePath) throws IOException {
+    static BaseData init(List<Picture> fathers, int index, File imagePath) throws IOException {
         if (baseData != null)
             throw new IllegalStateException("Error : You couldn't init this(`BaseData`) again.");
 
@@ -61,8 +61,8 @@ class BaseData {
         }
     }
 
-   private BaseData(int index, String imagePath) throws IOException {
-        BufferedImage image = ImageIO.read(new File(imagePath));
+   private BaseData(int index, File imagePath) throws IOException {
+        BufferedImage image = ImageIO.read(imagePath);
 		this.originalImageWidth  = image.getHeight();
 		this.originalImageHeight = image.getWidth();
         this.originalImageRGBSun = this.originalImageWidth * this.originalImageHeight * 255 * 3L;
