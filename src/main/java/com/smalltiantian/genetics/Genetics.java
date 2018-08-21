@@ -4,12 +4,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
 
+import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.Gson;
 
@@ -58,12 +60,27 @@ public class Genetics {
         }
     }
 
-    private static void addAnimal() {
+    private static void addAnimal() throws IOException {
         Earth earth    = Earth.instance();
-        int initialNum = earth.initialNum();
-        int DNANum     = earth.DNANum();
-        for (int i = 0; i < initialNum; i++) {
-            earth.addAnimal(new Picture(DNANum, earth));
+
+        File data = new File(earth.address(), "data.json");
+
+        if (data.exists()) {
+            String content = IOUtils.toString(data.toURI(), java.nio.charset.Charset.forName("UTF-8"));
+            JsonObject object = new Gson().fromJson(content, JsonObject.class);
+            int year = object.get("year").getAsInt();
+            earth.year(year);
+
+            JsonArray pics = object.getAsJsonArray("pics");
+            for (JsonElement pic : pics) {
+                earth.addAnimal(new Picture(pic.getAsJsonObject(), earth));
+            }
+        } else {
+            int initialNum = earth.initialNum();
+            int DNANum     = earth.DNANum();
+            for (int i = 0; i < initialNum; i++) {
+                earth.addAnimal(new Picture(DNANum, earth));
+            }
         }
     }
 }
