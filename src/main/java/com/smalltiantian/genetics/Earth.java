@@ -257,7 +257,7 @@ public class Earth {
         object.addProperty("year", year());
 
         JsonArray pics = new JsonArray();
-        for (Picture pic : this.newborns) {
+        for (Picture pic : this.fathers) {
             pics.add(pic.toJson());
         }
         object.add("pics", pics);
@@ -266,7 +266,7 @@ public class Earth {
         String fileName     = this.savePath + "/data.json";
         try {
             os = new FileOutputStream(fileName);
-            os.write(object.toString().getBytes());
+            IOUtils.write(object.toString(), os, java.nio.charset.Charset.forName("UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -281,10 +281,9 @@ public class Earth {
 
     private Thread[] prepareEarthRule() {
         Thread[] threads = new Thread[countThreadNum()];
-        ThreadGroup group = new ThreadGroup("Calculate picture same");
-        group.setDaemon(true);
         for (int i = 0; i < threads.length; i++) {
-            Thread t = new Thread(group, new CalculateThread());
+            Thread t = new Thread(new CalculateThread(), "Calculate Picture Thread-" + i);
+            t.setDaemon(true);
             threads[i] = t;
         }
         return threads;
@@ -322,6 +321,7 @@ public class Earth {
         for (Thread t : this.calculateThread) {
             t.start();
         }
+        new File(this.savePath).mkdirs();
     }
 
     /**
