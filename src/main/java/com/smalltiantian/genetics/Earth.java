@@ -72,9 +72,7 @@ public class Earth {
     private final int varianceRatio;    // 变异概率（-1 为自动选择）
     private final int saveTimer;        // 多少代保存一次
     private final int countThreadNum;   // 多少个线程参与计算
-    private final int initialNum;       // 初代种数量
     private final double growthRate;    // 增长率（-1 为自动选择）
-    private final int DNANum;           // 每一个个体有多少个 DNA
     private final int maxYear;          // 繁殖多少代后停止（-1 为无休止）
     private final Thread[] calculateThread;
     private final LinkedList<Picture> newborns = new LinkedList<Picture>();
@@ -82,6 +80,8 @@ public class Earth {
 
     private volatile int sleepCalculateThread = 0;
 
+    private int initialNum;             // 初代种数量
+    private int DNANum;                 // 每一个个体有多少个 DNA
     private int year = 0;
     private int strongest = -1;
     private long allSimilarity;
@@ -181,6 +181,22 @@ public class Earth {
             }
         }
         happyNewYear();
+    }
+
+    int initialNum() {
+        return this.initialNum;
+    }
+
+    void initialNum(int num) {
+        this.initialNum = num;
+    }
+
+    int DNANum() {
+        return this.DNANum;
+    }
+
+    void DNANum(int num) {
+        this.DNANum = num;
     }
 
     private void addFathers(Picture pic) {
