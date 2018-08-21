@@ -42,7 +42,6 @@ class Picture {
             cells.add(new Triangle(element.getAsJsonObject()));
         }
         this.cells = cells;
-        this.similarity = picStr.get("similarity").getAsInt();
     }
 
     Picture(Picture father, Picture mather, boolean isVariation) {
@@ -50,11 +49,10 @@ class Picture {
 
         this.earth = father.earth;
 
-        List<Triangle> cells = new ArrayList(father.cells.size());
-        cells.addAll(father.getHeadTriangle());
-        cells.addAll(mather.getBottonTriangle());
+        this.cells.addAll(father.getHeadTriangle());
+        this.cells.addAll(mather.getBottonTriangle());
 
-        Collections.shuffle(cells);
+        Collections.shuffle(this.cells);
 
 		if (isVariation)
 			variation();
@@ -95,7 +93,6 @@ class Picture {
         }
 
         object.add("pic", array);
-        object.addProperty("similarity", this.similarity);
         return object;
     }
 
