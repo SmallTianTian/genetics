@@ -5,26 +5,28 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 
 class Triangle {
-    int[] xPoint = new int[3];
-	int[] yPoint = new int[3];
-	int[] rgb    = new int[3];
+    private final int[] xPoint = new int[3];
+    private final int[] yPoint = new int[3];
+    private final int[] rgb    = new int[3];
+    private final int height;
+    private final int width;
 
-    public Triangle() {
+    public Triangle(int height, int width) {
+        this.height = height;
+        this.width  = width;
+
 		for(int i = 0; i < xPoint.length; i++)
-			this.xPoint[i] = BaseUtil.getRandomInt(BaseData.getInstance().originalImageWidth);
+			this.xPoint[i] = Utils.randomInt(this.width);
 		for(int i = 0; i < yPoint.length; i++)
-			this.yPoint[i] = BaseUtil.getRandomInt(BaseData.getInstance().originalImageHeight);
+			this.yPoint[i] = Utils.randomInt(this.height);
 		for(int i = 0; i < rgb.length; i++)
-			this.rgb[i]    = BaseUtil.getRandomInt(255);
+			this.rgb[i]    = Utils.randomInt(255);
 	}
 
-    public Triangle(int[] xPoint, int[] yPoint, int[] rgb) {
-		this.xPoint = xPoint;
-		this.yPoint = yPoint;
-		this.rgb    = rgb;
-	}
+    Triangle(JsonObject element) {
+        this.height = element.get("h").getAsInt();
+        this.width  = element.get("w").getAsInt();
 
-    public Triangle(JsonObject element) {
         JsonArray xPoint = element.getAsJsonArray("x");
         JsonArray yPoint = element.getAsJsonArray("y");
         JsonArray rgb    = element.getAsJsonArray("r");
@@ -42,35 +44,44 @@ class Triangle {
      *
      * @return  变异后的三角形
      */
-    Triangle variation() {
+    void variation() {
 		//随机改变第几位
-		int index = BaseUtil.getRandomInt(2);
+		int index = Utils.randomInt(2);
 		//选择随机改变的变量
-		switch (BaseUtil.getRandomInt(2)) {
+		switch (Utils.randomInt(2)) {
 		case 0:
 			int[] newXPoint = new int[]{this.xPoint[0], this.xPoint[1], this.xPoint[2]};
-			newXPoint[index] = BaseUtil.getRandomInt(BaseData.getInstance().originalImageWidth);
-			return new Triangle(newXPoint, this.yPoint, this.rgb);
+			newXPoint[index] = Utils.randomInt(this.width);
 		case 1:
 			int[] newYPoint = new int[]{this.yPoint[0], this.yPoint[1], this.yPoint[2]};
-			newYPoint[index] = BaseUtil.getRandomInt(BaseData.getInstance().originalImageHeight);
-			return new Triangle(xPoint, newYPoint, rgb);
+			newYPoint[index] = Utils.randomInt(this.height);
 		default:
 			int[] newRgb = new int[]{this.rgb[0], this.rgb[1], this.rgb[2]};
-			newRgb[index] = BaseUtil.getRandomInt(256);
-			return new Triangle(xPoint, yPoint, newRgb);
+			newRgb[index] = Utils.randomInt(255);
 		}
 	}
+
+    int[] xPoint() {
+        return this.xPoint;
+    }
+
+    int[] yPoint() {
+        return this.yPoint;
+    }
+
+    int[] rgb() {
+        return this.rgb;
+    }
 
     /**
      * 将数据转换为 Json 格式输出。
      *
      * 示例：
-     * {'x':[1,2,3], 'y':[4,5,6], 'r':[100,254,31]}
+     * {'x':[1,2,3], 'y':[4,5,6], 'r':[100,254,31], 'w':100, 'h':100}
      *
      * @return JsonElement
      */
-    public JsonElement toJson() {
+    JsonElement toJson() {
         JsonObject object = new JsonObject();
         JsonArray xPoint = new JsonArray();
         JsonArray yPoint = new JsonArray();
@@ -83,6 +94,8 @@ class Triangle {
         object.add("x", xPoint);
         object.add("y", yPoint);
         object.add("r", rgb);
+        object.addProperty("h", this.height);
+        object.addProperty("w", this.width);
         return object;
     }
 }
