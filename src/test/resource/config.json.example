@@ -1,0 +1,11 @@
+{
+  "godPath":"src/test/resource/firefox.jpg",
+  "saveTimer":"10",
+  "varianceRatio":"-1",
+  "savePath":"image",
+  "growthRate":"-1",
+  "countThreadNum":"5",
+  "initialNum":"100",
+  "DNANum":"100",
+  "maxYear": "-1"
+}
