@@ -2,6 +2,7 @@ package com.smalltiantian.genetics;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import javax.imageio.ImageIO;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+
+import org.apache.commons.io.IOUtils;
 
 public class Earth {
     private static class SingleHolder {
@@ -120,6 +123,11 @@ public class Earth {
     public void breedNaturally() {
         while (canOperation()) {
             growup();
+
+            if (this.year % this.saveTimer == 0) {
+                save();
+            }
+
             evolution();
         }
     }
@@ -133,6 +141,10 @@ public class Earth {
 
     public int year() {
         return this.year;
+    }
+
+    void year(int num) {
+        this.year = num;
     }
 
     String address() {
@@ -233,12 +245,45 @@ public class Earth {
                this.countThreadNum == 0 ? 1 : Runtime.getRuntime().availableProcessors();
     }
 
+    private void save() {
+        Picture strongest = strongest();
+        try {
+            strongest.draw();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        JsonObject object = new JsonObject();
+        object.addProperty("year", year());
+
+        JsonArray pics = new JsonArray();
+        for (Picture pic : this.fathers) {
+            pics.add(pic.toJson());
+        }
+        object.add("pics", pics);
+
+        FileOutputStream os = null;
+        String fileName     = this.savePath + "/data.json";
+        try {
+            os = new FileOutputStream(fileName);
+            IOUtils.write(object.toString(), os, java.nio.charset.Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                os.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                os = null;
+            }
+        }
+    }
+
     private Thread[] prepareEarthRule() {
         Thread[] threads = new Thread[countThreadNum()];
-        ThreadGroup group = new ThreadGroup("Calculate picture same");
-        group.setDaemon(true);
         for (int i = 0; i < threads.length; i++) {
-            Thread t = new Thread(group, new CalculateThread());
+            Thread t = new Thread(new CalculateThread(), "Calculate Picture Thread-" + i);
+            t.setDaemon(true);
             threads[i] = t;
         }
         return threads;
@@ -276,6 +321,7 @@ public class Earth {
         for (Thread t : this.calculateThread) {
             t.start();
         }
+        new File(this.savePath).mkdirs();
     }
 
     /**
