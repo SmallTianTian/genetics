@@ -79,7 +79,7 @@ class Utils {
         BufferedImage baseImage  = base.drawImge();
 
         for (int i = 0; i < baseImage.getWidth(); i++) {
-            for (int j = 0; i < baseImage.getHeight(); i++) {
+            for (int j = 0; j < baseImage.getHeight(); j++) {
                 int checkRGB = checkImage.getRGB(i, j);
                 int baseRGB  = baseImage.getRGB(i, j);
                 similarity  += sameRGB(checkRGB, baseRGB);
@@ -89,7 +89,7 @@ class Utils {
     }
 
     private static int sameRGB(int one, int two) {
-        return 255 * 3 - compareRGB(one, two);
+        return 255 * 3 * 3 - compareRGB(one, two);
     }
 
     /**
